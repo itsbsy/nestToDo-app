@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `Todo` MODIFY `id` VARCHAR(191) NOT NULL;

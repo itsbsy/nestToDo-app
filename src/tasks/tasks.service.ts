@@ -1,28 +1,33 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Task, TaskStatus } from './task.model';
+import { Task, ReturnTask, TaskStatus } from './task.model';
 import {v4 as uuid} from 'uuid'
 import { CreateTaskDto } from './dto/create-task-dto';
 import { GetTaskFilterDto } from './dto/get-task-filter.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { Todo } from '@prisma/client';
 
  
 @Injectable()
 export class TasksService {
-    private tasks : Task[] = [];
-
-    getallTasks(): Task[] {
-        return this.tasks;
+    constructor(private prisma: PrismaService) {}
+    async getallTasks(){
+        return await this.prisma.todo.findMany();
     }
 
-    getTaskById(id: string) :Task{
-        const found =  this.tasks.find(task => task.id === id);
+    async getTaskById(id: string) :Promise<Todo>{
+        const found =  await this.prisma.todo.findUnique({
+            where: {
+                id: id,
+              },
+          });
         if(!found){
             throw new NotFoundException("Task with id not found");
         }
         return found;
     }
-    getTaskWithFilters( filterDto : GetTaskFilterDto): Task[]{
+    async getTaskWithFilters( filterDto : GetTaskFilterDto): Promise<Todo[]>{
         const {status, search} = filterDto;
-        let tasks = this.getallTasks();
+        let tasks  = await this.getallTasks();
 
         if(status) {
             tasks = tasks.filter(task => task.status === status);
@@ -34,25 +39,27 @@ export class TasksService {
         return tasks;
 ;    }
 
-    deleteTaskById(id: string){
-        const found =  this.getTaskById(id)
-         return this.tasks  =  this.tasks.filter(item => item.id !== found.id);  
+   async deleteTaskById(id: string){
+        await this.prisma.todo.delete({
+            where: {
+              id: id,
+            }, })
+        return ("Deleted sucessfully")
     } 
-    updateTaskById(id: string, status : TaskStatus) : Task{
-        const taskToBeUpdated = this.getTaskById(id);
+    async updateTaskById(id: string, status : TaskStatus) : Promise<Todo>{
+        const taskToBeUpdated = await this.getTaskById(id);
         taskToBeUpdated.status = status;
         return  taskToBeUpdated; 
    } 
 
-    createTask(createTaskDto :  CreateTaskDto) :Task{
+    async createTask(createTaskDto :  CreateTaskDto): Promise<Todo>{
         const {title, description} = createTaskDto
          const task: Task ={
-            id : uuid(),
             title,
             description,
             status: TaskStatus.OPEN,  
          };
-         this.tasks.push(task);
-         return task;
+         const data =  await this.prisma.todo.create({ data: task });
+         return data;
     }
 } 
