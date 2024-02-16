@@ -15,9 +15,25 @@ model Todo {
   id    String   @unique @default(uuid())
   title String  
   description  String?
-  status status 
+  status status  @default(OPEN)
+  user User @relation(fields: [userId], references: [id])
+  userId String
+
 
   @@map("todo")
+ 
+}
+
+model User {
+  id    String   @unique @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+  email String @unique
+  password String
+  fullName String?
+  todos Todo[]
+
+  @@map("user")
  
 }
 

@@ -2,6 +2,7 @@ export interface Task{
     title: string;
     description: string;
     status : TaskStatus;
+    userId: string;
 }
 export interface ReturnTask{
     id: string;

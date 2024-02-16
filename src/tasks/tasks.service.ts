@@ -57,7 +57,8 @@ export class TasksService {
          const task: Task ={
             title,
             description,
-            status: TaskStatus.OPEN,  
+            status: TaskStatus.OPEN,
+            userId: 'one'
          };
          const data =  await this.prisma.todo.create({ data: task });
          return data;
