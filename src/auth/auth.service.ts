@@ -25,7 +25,6 @@ export class AuthService {
             id: true
          }
        })
-        //return the saved user
         return user;
     }
 
