@@ -22,3 +22,7 @@ import { IsEmail, IsNotEmpty } from "class-validator";
   password: string;
  
 }  
+
+export class Token {
+  accessToken : string
+}
