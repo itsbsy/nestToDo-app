@@ -6,11 +6,12 @@ import { GetTaskFilterDto } from './dto/get-task-filter.dto';
 import { TaskStatusValidationPipe } from './pipes/tasks-status-validation.pipe';
 import { Todo } from '@prisma/client';
 import { AuthGuard } from '@nestjs/passport';
+import { JwtGuard } from 'src/auth/guard';
 
 @Controller('tasks')
 export class TasksController {
     constructor(private tasksService: TasksService) {}
-        @UseGuards(AuthGuard('jwt')) 
+        @UseGuards(JwtGuard) 
         @Get()
         getTasks(@Query(ValidationPipe) filterDto : GetTaskFilterDto){
             if(Object.keys(filterDto).length){
