@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { ReturnTask, Task, TaskStatus } from './task.model';
 import { CreateTaskDto } from './dto/create-task-dto';
@@ -7,11 +7,13 @@ import { TaskStatusValidationPipe } from './pipes/tasks-status-validation.pipe';
 import { Todo } from '@prisma/client';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtGuard } from 'src/auth/guard';
+import {Request } from 'express'
 
+@UseGuards(JwtGuard) 
 @Controller('tasks')
 export class TasksController {
     constructor(private tasksService: TasksService) {}
-        @UseGuards(JwtGuard) 
+       
         @Get()
         getTasks(@Query(ValidationPipe) filterDto : GetTaskFilterDto){
             if(Object.keys(filterDto).length){
@@ -41,8 +43,8 @@ export class TasksController {
         @Post()
         @UsePipes(ValidationPipe)
         createTask( 
-        @Body() createTaskDto : CreateTaskDto):  Promise<Todo>
+        @Body() createTaskDto : CreateTaskDto, @Req() req: Request):  Promise<Todo>
          {
-            return this.tasksService.createTask(createTaskDto)
+            return this.tasksService.createTask(createTaskDto, req.user)
         }
 }

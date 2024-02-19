@@ -47,18 +47,23 @@ export class TasksService {
         return ("Deleted sucessfully")
     } 
     async updateTaskById(id: string, status : TaskStatus) : Promise<Todo>{
-        const taskToBeUpdated = await this.getTaskById(id);
-        taskToBeUpdated.status = status;
-        return  taskToBeUpdated; 
+  
+        const updatedTask = await this.prisma.todo.update({
+            where: { id: id},
+            data: {
+                status : status
+            },
+          });
+        return  updatedTask; 
    } 
 
-    async createTask(createTaskDto :  CreateTaskDto): Promise<Todo>{
+    async createTask(createTaskDto :  CreateTaskDto, user): Promise<Todo>{
         const {title, description} = createTaskDto
          const task: Task ={
             title,
             description,
             status: TaskStatus.OPEN,
-            userId: '820c7978-dfce-4423-be4b-1edb9c039044'
+            userId: user.id
          };
          const data =  await this.prisma.todo.create({ data: task });
          return data;
