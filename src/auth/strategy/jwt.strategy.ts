@@ -25,6 +25,7 @@ export class JwtStrategy extends PassportStrategy(
     });
   }
 
+  
   async validate(payload: {
     sub: string;
     email: string;

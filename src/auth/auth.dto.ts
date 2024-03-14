@@ -11,7 +11,7 @@ import { IsEmail, IsNotEmpty } from "class-validator";
   
    fullName: string;
  }  
-
+ 
  export class LoginDto {
 
   @IsEmail()
